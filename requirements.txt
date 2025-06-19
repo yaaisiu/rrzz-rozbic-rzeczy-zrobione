@@ -1,0 +1,13 @@
+fastapi
+uvicorn
+streamlit
+neo4j
+langchain
+langchain-neo4j
+ollama
+openai
+google-generativeai
+pydantic
+pytest
+python-dotenv
+pyyaml 

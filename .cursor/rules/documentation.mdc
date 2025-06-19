@@ -1,0 +1,15 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+---
+description: Include documentation directory for project context
+globs: ["**/*.ts", "**/*.js", "**/*.py"] # Apply to specific file types
+alwaysApply: true # Always include this rule
+---
+Refer to the documentation directory for context, including:
+- @documentation/prd.md
+- @documentation/dataflow.md
+- @documentation/techstack.md
+Use these files to inform code generation and ensure alignment with project requirements.

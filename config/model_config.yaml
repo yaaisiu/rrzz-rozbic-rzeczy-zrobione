@@ -1,0 +1,10 @@
+llm:
+  provider: ${LLM_PROVIDER}
+  ollama:
+    base_url: ${OLLAMA_BASE_URL}
+  openai:
+    api_key: ${OPENAI_API_KEY}
+  google:
+    api_key: ${GOOGLE_API_KEY}
+embedding:
+  model: "text-embedding-ada-002" 

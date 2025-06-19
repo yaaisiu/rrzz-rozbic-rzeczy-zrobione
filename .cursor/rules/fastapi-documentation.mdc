@@ -1,0 +1,6 @@
+---
+description: FastAPI documentation
+globs: 
+alwaysApply: false
+---
+Use it when you need documentation for FastAPI for python.

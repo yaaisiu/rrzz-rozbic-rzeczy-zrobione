@@ -1,0 +1,14 @@
+19.06
+
+- Getting things done #project
+    - Write down short introduction what we want. #sub5minutes
+        - We want to create locally running, llm and neo4j based system, that will allow me to take notes as this file and they will be automatically processed by llm, ingested to knowledge graph. For interface we'll use streamlit, for backend we'll go with fastapi, for llm hosting we'll use ollama. For coding we're using VSCode branch Cursor, so I'm thinking about using devcontainters to contain all app elements. System will allow me to take notes, they will be highlighted, tagged automatically, you can follow the graph to get more context information. Dynamic system. What's also important - we want to create it in a way that will allow to use ollama or other providers as OpenAI, Google or other local system. #reference
+    - Find on X post about "template" for Vibe Coding. #done
+        - Here it is: https://pbs.twimg.com/media/GtfC0G8XQAAYJ-c?format=jpg&name=large #reference
+        - I'll now paste this template to agent here and ask it to prepare.
+            - We also found interesting vibe coding template, but we first need to do a security check over it. https://github.com/humanstack/vibe-coding-template #someday
+        - It's on this way. We already have devcontainters and I'm checking whether they start.
+        - Stub notebooks are not present, as notebooks can be created only with Claude models in Cursor. #issue
+- Cursor notes
+    - .cursorignore wrzucone do folderu powinno ignorować jego zawartość dla Cursora. #reference
+    

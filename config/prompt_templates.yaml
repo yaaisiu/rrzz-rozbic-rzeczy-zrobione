@@ -1,0 +1,13 @@
+tagging_prompt: |
+  Extract key topics, tags, and entities from the following note:
+  """
+  {note}
+  """
+  Return a list of tags and entities.
+
+highlighting_prompt: |
+  Highlight important phrases and concepts in the following note:
+  """
+  {note}
+  """
+  Return the note with highlights. 
