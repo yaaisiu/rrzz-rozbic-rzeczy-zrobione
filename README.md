@@ -1,156 +1,135 @@
 # rrzz-rozbic-rzeczy-zrobione
 
-## Purpose
-A local, privacy-first note-taking tool that auto-tags, embeds, and links notes in a Neo4j knowledge graph.
-
-## Functional Requirements
-- Capture free-form text notes
-- Automatic tagging, entities & links (LLM)
-- Visual graph exploration
-- Provider-agnostic LLM (Ollama, OpenAI, Gemini)
-
-## Non-Functional
-- Runs fully offline (Docker)
-- <500 ms query latency for up to 10k notes
-- ≤4 GB RAM baseline
+A local, privacy-first note-taking tool that auto-tags, embeds, and links notes from a text file into a Neo4j knowledge graph.
 
 ## Tech Stack
-- UI: Streamlit
-- API: FastAPI
-- LLM: Ollama (default) via OpenAI-compatible endpoint
-- Graph DB: Neo4j 5.x
-- DevEnv: VS Code + Cursor in Dev Container
+- **CLI**: Python
+- **LLM**: Ollama (default)
+- **Graph DB**: Neo4j 5.x
+- **Containerization**: Docker, Docker Compose
 
-## Current Status ✅
-
-**Backend Implementation Complete!** The core note ingestion pipeline is fully functional:
-
-- ✅ **LLM Integration**: Ollama with qwen3:0.6b model (optimized for memory constraints)
-- ✅ **Note Processing**: Automatic tag extraction, entity recognition, and highlighting
-- ✅ **Graph Storage**: Neo4j integration with proper node/relationship management
-- ✅ **API Layer**: Complete FastAPI backend with RESTful endpoints
-- ✅ **Error Handling**: Robust error handling and logging throughout
-- ✅ **Performance**: Clean responses with `think: false` for faster processing
-
-## Quick Start with Docker
+## Quick Start
 
 ### Prerequisites
 - Docker and Docker Compose installed
-- At least 4GB RAM available for containers
 
 ### 1. Clone and Setup
 ```bash
 git clone <repository-url>
 cd rrzz-rozbic-rzeczy-zrobione
-cp env.example .env
 ```
 
-### 2. Start All Services
-```bash
-# Make scripts executable
-chmod +x scripts/*.sh
+### 2. Start Docker Services
+You have two options to start the services:
 
-# Start all services (FastAPI, Neo4j, Ollama, Streamlit)
+#### Option A: Using the startup script (Recommended)
+```bash
+# Make the script executable
+chmod +x scripts/docker-start.sh
+
+# Start all services
 ./scripts/docker-start.sh
 ```
 
-### 3. Access Services
-- **FastAPI Backend**: http://localhost:8000
-- **FastAPI Docs**: http://localhost:8000/docs
-- **Neo4j Browser**: http://localhost:7474 (user: neo4j, password: password)
-- **Streamlit Frontend**: http://localhost:8501
+#### Option B: Manual Docker Compose
+```bash
+# Start services in detached mode
+docker-compose up -d
+
+# Check service status
+docker-compose ps
+```
+
+### 3. Pull LLM Model (Optional)
+After services are running, you can pull a specific model for Ollama:
+
+```bash
+# Make the script executable
+chmod +x scripts/pull_model.sh
+
+# Pull default model (qwen3:0.6b)
+./scripts/pull_model.sh
+
+# Or pull a specific model
+OLLAMA_MODEL=llama3.2:3b ./scripts/pull_model.sh
+```
+
+### 4. Verify Services
+Once everything is running, you can access:
+
+- **Neo4j Browser**: http://localhost:7474
+  - Username: `neo4j`
+  - Password: `password`
 - **Ollama API**: http://localhost:11434
 
-### 4. Test the Pipeline
+### 5. Useful Commands
+
 ```bash
-# Test the complete ingestion pipeline
-python test_ingestion_quick.py
-
-# Test individual components
-python examples/test_ollama.py
-```
-
-### 5. Use the API
-```bash
-# Ingest a note via API
-curl -X POST http://localhost:8000/notes \
-  -H "Content-Type: application/json" \
-  -d '{"content": "I need to finish the Python project by Friday."}'
-
-# Search notes
-curl -X POST http://localhost:8000/notes/search \
-  -H "Content-Type: application/json" \
-  -d '{"query": "Python project"}'
-```
-
-### Service Management
-```bash
-# View logs
+# View service logs
 docker-compose logs -f
 
-# Stop services
+# Stop all services
 docker-compose down
 
 # Restart services
 docker-compose restart
 
-# Rebuild and start
-docker-compose up -d --build
+# Check service status
+docker-compose ps
+
+# Access Neo4j shell
+docker-compose exec neo4j cypher-shell -u neo4j -p password
+
+# Access Ollama container
+docker-compose exec ollama ollama list
 ```
 
-## API Endpoints
+### 6. Environment Setup
+Copy the example environment file and configure as needed:
+```bash
+cp env.example .env
+# Edit .env with your specific configurations
+```
 
-The FastAPI backend provides the following endpoints:
+## Development
 
-- `POST /notes` - Ingest a single note
-- `POST /notes/batch` - Ingest multiple notes in batch
-- `GET /notes/{note_id}` - Retrieve a specific note
-- `POST /notes/search` - Search notes by content or tags
-- `GET /notes` - List recent notes
-- `GET /health` - Health check with service status
+### Running Tests
+```bash
+# Run all tests
+python -m pytest tests/
 
-## Development Setup (Alternative)
-1. Clone the repo
-2. Build and start the dev container in VS Code (with Cursor)
-3. Install dependencies: `pip install -r requirements.txt`
-4. Copy `.env.example` to `.env` and fill in required values
-5. Run services with Docker Compose
-6. Access FastAPI at `localhost:8000`, Streamlit at `localhost:8501`, Neo4j at `localhost:7474`, and Ollama at `localhost:11434`
+# Run specific test categories
+python -m pytest tests/test_graph.py
+python -m pytest tests/test_llm.py
+python -m pytest tests/test_ingestion.py
+```
 
-## Key Features Implemented
+### Project Structure
+```
+src/
+├── backend/          # Backend services
+├── graph/           # Neo4j graph operations
+├── llm/             # LLM client implementations
+└── utils/           # Utility functions
 
-### LLM Integration
-- **Model**: qwen3:0.6b (optimized for memory constraints)
-- **Features**: Automatic tag extraction, entity recognition, highlighting
-- **Performance**: Clean responses with `think: false` for faster processing
-- **Fallback**: Graceful error handling when LLM processing fails
+config/              # Configuration files
+scripts/             # Docker and setup scripts
+tests/               # Test files
+```
 
-### Graph Database
-- **Storage**: Neo4j with proper node and relationship management
-- **Schema**: Notes, Tags, Entities with appropriate relationships
-- **Search**: Full-text search across notes and tags
-- **Upsert**: Prevents duplicate notes and maintains data integrity
+## Troubleshooting
 
-### API Layer
-- **RESTful**: Complete CRUD operations for notes
-- **Validation**: Pydantic models for request/response validation
-- **Error Handling**: Comprehensive error responses and logging
-- **Health Checks**: Service status monitoring
+### Common Issues
 
-## Next Steps
+1. **Port conflicts**: If ports 7474 or 7687 are in use, modify `docker-compose.yml`
+2. **Ollama model not found**: Run the pull model script or manually pull via `docker-compose exec ollama ollama pull <model>`
+3. **Neo4j connection issues**: Wait for the service to fully initialize (can take 30-60 seconds)
 
-### Immediate Priorities
-1. **Frontend Development**: Implement Streamlit interface for note input and visualization
-2. **Graph Visualization**: Add Neo4j Bloom integration for graph exploration
-3. **Embedding Implementation**: Replace placeholder embeddings with actual vector generation
-4. **Performance Optimization**: Implement caching and batch processing
+### Service Health Checks
+```bash
+# Check Neo4j
+curl http://localhost:7474
 
-### Future Enhancements
-- **Multi-provider LLM**: Support for OpenAI, Gemini, and other providers
-- **Advanced Search**: Semantic search with embeddings
-- **Sync & Backup**: Automated backup and synchronization features
-- **Mobile Interface**: Responsive design for mobile devices
-
-## Jupyter Notebooks
-
-The `notebooks/`
+# Check Ollama
+curl http://localhost:11434/api/tags
+```

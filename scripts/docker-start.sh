@@ -36,23 +36,13 @@ until curl -f http://localhost:11434/api/tags > /dev/null 2>&1; do
 done
 echo "✅ Ollama is ready!"
 
-# Wait for FastAPI backend
-echo "Waiting for FastAPI backend..."
-until curl -f http://localhost:8000/health > /dev/null 2>&1; do
-    echo "Backend not ready yet..."
-    sleep 5
-done
-echo "✅ Backend is ready!"
-
 echo "🎉 All services are running!"
 echo ""
 echo "📋 Service URLs:"
-echo "  - FastAPI Backend: http://localhost:8000"
 echo "  - Neo4j Browser: http://localhost:7474"
-echo "  - Streamlit Frontend: http://localhost:8501"
 echo "  - Ollama API: http://localhost:11434"
 echo ""
 echo "📚 Useful commands:"
 echo "  - View logs: docker-compose logs -f"
 echo "  - Stop services: docker-compose down"
-echo "  - Restart services: docker-compose restart" 
+echo "  - Restart services: docker-compose restart

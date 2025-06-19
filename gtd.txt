@@ -25,7 +25,11 @@
     - There's too much of this, so let's take two steps back and wrap it up.
         - Removing all bloat, leaving only notebooks and api, removing frontend, we'll use python scripts or notebook to recreate this pipeline and check what's happening under the hood. #next_task
             - As bloat I understand removing unneeded code and making sure we have no hardcoded values.
+            - At the same time created 20250619_1846_Dev-notes-roadmap.md with more details about the future.
         - Try to add codebase knowledge base, generated automatically. #project
+    - Move all hardcoded variables to config. #someday
+    - Freeze requirements #next_task
+    - Add Google API code to save some time with processing. After we get the basics we'll get to local models. #next_task
 - Cursor notes
     - .cursorignore wrzucone do folderu powinno ignorować jego zawartość dla Cursora. #reference
 - Prompts used #reference
@@ -35,9 +39,10 @@
             - Failed to integrate MacOS ChatGPT application with Cursor running containers. #LLM_PROVIDER
             - Iterated with our codebase and asked for proposed changes. Request id: c16750a1-030b-4bcc-8c3e-b51a4720031a
                 - Add batch processing to our ingesting pipeline. #project #someday
-    - As above but for ollama 0.9.2 #next_task
+    - As above but for ollama 0.9.2 #failed
         - Used same chat as previously for o4.
         - Got to work on neo4j again as it got removed by this promot.
     - And at the end I ended with the single documentation file containing all information. Probably because documentation was added to the context. Some kind of loop. #wonder
         - Anyway I'll check it against codebase and use anyway. I should try to redo the process for particular libraries documentations. #someday
+    - Asking Gemini Pro 2.5 to analyse my codebase, remove streamlit and all non used code and clean up with the files. #next_task
 

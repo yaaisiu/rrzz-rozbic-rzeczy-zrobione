@@ -1,22 +1,30 @@
-fastapi
-uvicorn
-streamlit
-neo4j
-langchain
-langchain-neo4j
-ollama
-openai
-google-generativeai
-pydantic
-pytest
+# Environment and Configuration
 python-dotenv
 pyyaml
-# Notebook dependencies
-jupyter
-pandas
+
+# LLM and AI Framework
+langchain
+langchain-community
+langchain-openai
+langchain-google-genai
+
+# Database
+neo4j
+
+# Local LLM
+ollama
+
+# HTTP and API
+requests
+
+# Jupyter and Development
+ipykernel
+notebook
+
+# Data Processing and Analysis
 numpy
+pandas
 matplotlib
-seaborn
-scikit-learn
-networkx
-requests 
+
+# Testing
+pytest

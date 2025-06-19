@@ -23,35 +23,10 @@ services:
     networks:
       - app-network
 
-  # Streamlit Frontend Service
-  frontend:
-    build:
-      context: .
-      dockerfile: .devcontainer/Dockerfile
-    ports:
-      - "8501:8501"
-    environment:
-      - NEO4J_URI=bolt://neo4j:7687
-      - NEO4J_USER=neo4j
-      - NEO4J_PASSWORD=password
-      - OLLAMA_BASE_URL=http://ollama:11434
-      - OLLAMA_MODEL=qwen3:0.6b
-      - PYTHONPATH=/workspaces/rrzz-rozbic-rzeczy-zrobione
-    volumes:
-      - .:/workspaces/rrzz-rozbic-rzeczy-zrobione
-    working_dir: /workspaces/rrzz-rozbic-rzeczy-zrobione
-    depends_on:
-      - neo4j
-      - ollama
-    command: >
-      sh -c "./scripts/pull_model.sh && streamlit run src/frontend/app.py --server.port 8501 --server.address 0.0.0.0"
-    networks:
-      - app-network
-
 volumes:
   neo4j_data:
   ollama_data:
 
 networks:
   app-network:
-    driver: bridge 
+    driver: bridge
