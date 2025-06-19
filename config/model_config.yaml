@@ -2,6 +2,8 @@ llm:
   provider: ${LLM_PROVIDER}
   ollama:
     base_url: ${OLLAMA_BASE_URL}
+    model: ${OLLAMA_MODEL}
+    timeout: ${OLLAMA_TIMEOUT}
   openai:
     api_key: ${OPENAI_API_KEY}
   google:

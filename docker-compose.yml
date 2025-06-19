@@ -1,0 +1,78 @@
+version: '3.8'
+
+services:
+  # FastAPI Backend Service
+  backend:
+    build:
+      context: .
+      dockerfile: .devcontainer/Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - NEO4J_URI=bolt://neo4j:7687
+      - NEO4J_USER=neo4j
+      - NEO4J_PASSWORD=password
+      - OLLAMA_BASE_URL=http://host.docker.internal:11434
+      - OLLAMA_MODEL=qwen3:0.6b
+      - OLLAMA_TIMEOUT=60
+      - LLM_PROVIDER=ollama
+      - PYTHONPATH=/workspaces/rrzz-rozbic-rzeczy-zrobione
+    volumes:
+      - ./src:/workspaces/rrzz-rozbic-rzeczy-zrobione/src
+      - ./config:/workspaces/rrzz-rozbic-rzeczy-zrobione/config
+      - ./data:/workspaces/rrzz-rozbic-rzeczy-zrobione/data
+    working_dir: /workspaces/rrzz-rozbic-rzeczy-zrobione
+    depends_on:
+      - neo4j
+    command: uvicorn src.backend.api:app --host 0.0.0.0 --port 8000 --reload
+    networks:
+      - app-network
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  # Neo4j Database Service
+  neo4j:
+    image: neo4j:5.15-community
+    ports:
+      - "7474:7474"  # HTTP
+      - "7687:7687"  # Bolt
+    environment:
+      - NEO4J_AUTH=neo4j/password
+      - NEO4J_PLUGINS=["apoc"]
+    volumes:
+      - neo4j_data:/data
+      - neo4j_logs:/logs
+      - neo4j_import:/var/lib/neo4j/import
+      - neo4j_plugins:/plugins
+    networks:
+      - app-network
+
+  # Streamlit Frontend Service
+  frontend:
+    build:
+      context: .
+      dockerfile: .devcontainer/Dockerfile
+    ports:
+      - "8501:8501"
+    environment:
+      - BACKEND_URL=http://backend:8000
+      - PYTHONPATH=/workspaces/rrzz-rozbic-rzeczy-zrobione
+    volumes:
+      - ./src:/workspaces/rrzz-rozbic-rzeczy-zrobione/src
+      - ./config:/workspaces/rrzz-rozbic-rzeczy-zrobione/config
+    working_dir: /workspaces/rrzz-rozbic-rzeczy-zrobione
+    depends_on:
+      - backend
+    command: streamlit run src/frontend/app.py --server.port 8501 --server.address 0.0.0.0
+    networks:
+      - app-network
+
+volumes:
+  neo4j_data:
+  neo4j_logs:
+  neo4j_import:
+  neo4j_plugins:
+
+networks:
+  app-network:
+    driver: bridge 

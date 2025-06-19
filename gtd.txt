@@ -8,7 +8,17 @@
         - I'll now paste this template to agent here and ask it to prepare.
             - We also found interesting vibe coding template, but we first need to do a security check over it. https://github.com/humanstack/vibe-coding-template #someday
         - It's on this way. We already have devcontainters and I'm checking whether they start.
-        - Stub notebooks are not present, as notebooks can be created only with Claude models in Cursor. #issue
+        - Stub notebooks are not present, as notebooks can be created only with Claude models in Cursor. #done
+            - Some Claude credits are in Pro plan of Cursor. #reference
+    - Setting up ollama into my current devcontainer. #done
+        - Must switch to 1.7b model due to low memory. Ollama code seems to be updated to Ollama 0.9.
+        - Checking even 0.6b model.
+    - We have a plan for today 20250619_plan-for-today.md #reference
+    - Let's implement ingestion.py #next_task
+        - First, neo4j client setup.
+        - Neo is now connecting, things are added to it. Testing ollama ingestion script, it gives some troube.
+        - Let's try to use think="false" flag to speed things up. Currently we're waiting very long for response. #next_task
+            - It works. #reference
+    - We can try tool-calling and streaming in the future #reference   
 - Cursor notes
     - .cursorignore wrzucone do folderu powinno ignorować jego zawartość dla Cursora. #reference
-    
