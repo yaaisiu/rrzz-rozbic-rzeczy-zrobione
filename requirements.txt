@@ -10,4 +10,13 @@ google-generativeai
 pydantic
 pytest
 python-dotenv
-pyyaml 
+pyyaml
+# Notebook dependencies
+jupyter
+pandas
+numpy
+matplotlib
+seaborn
+scikit-learn
+networkx
+requests 

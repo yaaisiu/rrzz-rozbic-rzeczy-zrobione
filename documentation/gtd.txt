@@ -8,7 +8,7 @@
         - I'll now paste this template to agent here and ask it to prepare.
             - We also found interesting vibe coding template, but we first need to do a security check over it. https://github.com/humanstack/vibe-coding-template #someday
         - It's on this way. We already have devcontainters and I'm checking whether they start. #done
-        - Stub notebooks are not present, as notebooks can be created only with Claude models in Cursor. #issue
+        - Stub notebooks are not present, as notebooks can be created only with Claude models in Cursor. #resolve
         - Created multiple rules for Cursor. I think we are ready to start working. Let's put this on the github to use Gemini. #next_task
 - Cursor notes
     - .cursorignore wrzucone do folderu powinno ignorować jego zawartość dla Cursora. #reference
