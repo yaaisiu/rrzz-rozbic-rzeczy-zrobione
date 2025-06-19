@@ -9,7 +9,8 @@ globs: ["**/*.ts", "**/*.js", "**/*.py"] # Apply to specific file types
 alwaysApply: true # Always include this rule
 ---
 Refer to the documentation directory for context, including:
-- @documentation/prd.md
-- @documentation/dataflow.md
-- @documentation/techstack.md
+- [prd.md](mdc:documentation/prd.md)
+- [dataflow.md](mdc:documentation/dataflow.md)
+- [techstack.md](mdc:documentation/techstack.md)
+- [ollama-gpt-docs.md](mdc:documentation/ollama-gpt-docs.md)
 Use these files to inform code generation and ensure alignment with project requirements.

@@ -25,6 +25,19 @@
     - There's too much of this, so let's take two steps back and wrap it up.
         - Removing all bloat, leaving only notebooks and api, removing frontend, we'll use python scripts or notebook to recreate this pipeline and check what's happening under the hood. #next_task
             - As bloat I understand removing unneeded code and making sure we have no hardcoded values.
-        - Try to add codebase knowledge base, generated automatically.
+        - Try to add codebase knowledge base, generated automatically. #project
 - Cursor notes
     - .cursorignore wrzucone do folderu powinno ignorować jego zawartość dla Cursora. #reference
+- Prompts used #reference
+    - Create a neo4j documentation for python ollama docker cli project working on automaticaly creating knowledge graphs from my semi structured notes, using llm to extract entities. Look for latest documentation. #done
+        - For cursor project and Gemini Gem. Could be also used in ChatGPT project or Grok project.
+        - Created first version with o4 in ChatGPT.
+            - Failed to integrate MacOS ChatGPT application with Cursor running containers. #LLM_PROVIDER
+            - Iterated with our codebase and asked for proposed changes. Request id: c16750a1-030b-4bcc-8c3e-b51a4720031a
+                - Add batch processing to our ingesting pipeline. #project #someday
+    - As above but for ollama 0.9.2 #next_task
+        - Used same chat as previously for o4.
+        - Got to work on neo4j again as it got removed by this promot.
+    - And at the end I ended with the single documentation file containing all information. Probably because documentation was added to the context. Some kind of loop. #wonder
+        - Anyway I'll check it against codebase and use anyway. I should try to redo the process for particular libraries documentations. #someday
+
