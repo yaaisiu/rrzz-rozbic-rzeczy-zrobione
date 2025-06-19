@@ -5,12 +5,13 @@ from typing import List, Dict, Any
 
 from src.backend.file_parser import parse_file, Note
 from src.graph.neo4j_client import Neo4jClient
+from src.llm.base import BaseLLM
 from src.llm.ollama_client import OllamaLLM
 
 logger = logging.getLogger(__name__)
 
 class GraphIngestionService:
-    def __init__(self, neo4j_client: Neo4jClient, llm_client: OllamaLLM):
+    def __init__(self, neo4j_client: Neo4jClient, llm_client: BaseLLM):
         self.client = neo4j_client
         self.llm_client = llm_client
 
@@ -146,34 +147,4 @@ class GraphIngestionService:
         if notes and node_ids:
             self.build_hierarchy(notes, node_ids)
         
-        logger.info(f"Finished ingestion for file: {file_path}")
-
-
-if __name__ == '__main__':
-    # Example Usage
-    # Make sure Neo4j is running and .env file is configured or env vars are set
-    logging.basicConfig(level=logging.INFO)
-    
-    # Create dummy gtd file for testing
-    with open("gtd_test.txt", "w") as f:
-        f.write("Task 1 #project - Discuss budget with @john for #project-alpha\n")
-        f.write("  Subtask 1.1 - Prepare slides\n")
-        f.write("    Subtask 1.1.1 #detail - Draft initial version\n")
-        f.write("  Subtask 1.2\n")
-        f.write("Task 2 #another - Plan team offsite\n")
-
-    try:
-        neo4j_client = Neo4jClient()
-        ollama_client = OllamaLLM()
-        # Check if ollama is running
-        if not ollama_client.health_check():
-            logger.error("Ollama is not running. Please start Ollama to run this script.")
-        else:
-            ingestion_service = GraphIngestionService(neo4j_client, ollama_client)
-            ingestion_service.ingest_gtd_file("gtd_test.txt")
-            print("Ingestion successful. Check your Neo4j browser.")
-    except Exception as e:
-        logger.error(f"An error occurred during ingestion: {e}", exc_info=True)
-    finally:
-        if 'neo4j_client' in locals() and neo4j_client:
-            neo4j_client.close() 
+        logger.info(f"Finished ingestion for file: {file_path}") 

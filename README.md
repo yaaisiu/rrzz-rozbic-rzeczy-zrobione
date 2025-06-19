@@ -133,3 +133,10 @@ curl http://localhost:7474
 # Check Ollama
 curl http://localhost:11434/api/tags
 ```
+
+## Environment Variables
+
+To configure the application, create a `.env` file in the root directory by copying the `env.example` file:
+
+*   `google`: Uses the Google Gemini API. Requires `GOOGLE_API_KEY` to be set in the environment.
+*   `openai`: Uses the OpenAI API. Requires `OPENAI_API_KEY` to be set in the environment.

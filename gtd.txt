@@ -23,13 +23,17 @@
     - System is not doing what we want, it's based on separate added notes and I would like it to work on text I'm editing, processing each line, putting it into graph - with information about where line begins and ends - it would need to be updated if user changes the order of things. More like notepad it needs to be.
     - Changed to simpler workflow - for now we just take our note and ingest it into the graph with some llm enrichment. Tests are ongoing. #solvingtheissue
     - There's too much of this, so let's take two steps back and wrap it up.
-        - Removing all bloat, leaving only notebooks and api, removing frontend, we'll use python scripts or notebook to recreate this pipeline and check what's happening under the hood. #next_task
+        - Removing all bloat, leaving only notebooks and api, removing frontend, we'll use python scripts or notebook to recreate this pipeline and check what's happening under the hood. #done
             - As bloat I understand removing unneeded code and making sure we have no hardcoded values.
             - At the same time created 20250619_1846_Dev-notes-roadmap.md with more details about the future.
         - Try to add codebase knowledge base, generated automatically. #project
     - Move all hardcoded variables to config. #someday
     - Freeze requirements #next_task
-    - Add Google API code to save some time with processing. After we get the basics we'll get to local models. #next_task
+    - Add Google API code to save some time with processing. After we get the basics we'll get to local models. #done
+        - Gemini Pro 2.5 created the plan and we're trying to run it and fix at the same time.
+            - Not good, not good :D Problems everywhere.
+            - For now Gemini usage is hardcoded. For some reason Ollama is very persistent :D
+            - Free Gemini API have 10RPM limit, that makes it quite unusable in this app. #reference
 - Cursor notes
     - .cursorignore wrzucone do folderu powinno ignorować jego zawartość dla Cursora. #reference
 - Prompts used #reference

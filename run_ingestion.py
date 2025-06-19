@@ -1,7 +1,12 @@
 import logging
+import os
+from dotenv import load_dotenv
 from src.backend.graph_ingestion_service import GraphIngestionService
 from src.graph.neo4j_client import Neo4jClient
-from src.llm.ollama_client import OllamaLLM
+from src.llm.factory import get_llm_client
+
+# Load environment variables from .env file
+load_dotenv()
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -12,23 +17,23 @@ def main():
     Main function to run the GTD file ingestion pipeline.
     """
     logger.info("Starting GTD file ingestion pipeline...")
+    # --- Debugging ---
+    logger.info(f"LLM Provider from env: {os.getenv('LLM_PROVIDER')}")
+    # --- End Debugging ---
     neo4j_client = None
     try:
-        # Initialize clients
+        # Initialize clients using the factory
         logger.info("Initializing clients...")
         neo4j_client = Neo4jClient()
-        ollama_client = OllamaLLM()
+        llm_client = get_llm_client()
 
-        # Health check for Ollama
-        logger.info("Checking Ollama service health...")
-        if not ollama_client.health_check():
-            logger.error("Ollama is not running. Please start Ollama to run this script.")
-            return
-
-        logger.info("Ollama service is healthy.")
+        # Health check for Ollama is now client-specific; can be removed or generalized
+        # if hasattr(llm_client, 'health_check') and not llm_client.health_check():
+        #     logger.error(f"{llm_client.__class__.__name__} is not healthy.")
+        #     return
 
         # Initialize ingestion service
-        ingestion_service = GraphIngestionService(neo4j_client, ollama_client)
+        ingestion_service = GraphIngestionService(neo4j_client, llm_client)
 
         # Run ingestion
         gtd_file = "gtd.txt"

@@ -3,6 +3,7 @@ from typing import Any, Dict, List, Optional
 from neo4j import GraphDatabase
 import os
 from datetime import datetime
+import time
 
 logger = logging.getLogger(__name__)
 
@@ -50,17 +51,24 @@ class Neo4jClient:
         
         logger.info(f"Initialized Neo4j client with URI: {self.uri}")
     
-    def _connect(self) -> None:
-        """Establish connection to Neo4j database."""
-        try:
-            self.driver = GraphDatabase.driver(self.uri, auth=(self.user, self.password))
-            # Test connection
-            with self.driver.session() as session:
-                session.run("RETURN 1")
-            logger.info("Successfully connected to Neo4j")
-        except Exception as e:
-            logger.error(f"Failed to connect to Neo4j: {e}")
-            raise
+    def _connect(self, retries=5, delay=5) -> None:
+        """Establish connection to Neo4j database with retry logic."""
+        for i in range(retries):
+            try:
+                self.driver = GraphDatabase.driver(self.uri, auth=(self.user, self.password))
+                # Test connection
+                with self.driver.session() as session:
+                    session.run("RETURN 1")
+                logger.info("Successfully connected to Neo4j")
+                return
+            except Exception as e:
+                logger.warning(f"Failed to connect to Neo4j on attempt {i+1}/{retries}: {e}")
+                if i < retries - 1:
+                    logger.info(f"Retrying in {delay} seconds...")
+                    time.sleep(delay)
+                else:
+                    logger.error("Could not establish connection to Neo4j after multiple retries.")
+                    raise
     
     def execute_query(self, query: str, parameters: Optional[Dict[str, Any]] = None) -> List[Dict[str, Any]]:
         """
