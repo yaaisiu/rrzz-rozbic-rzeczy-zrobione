@@ -2,8 +2,31 @@ import logging
 from typing import Any, Dict, List, Optional
 from neo4j import GraphDatabase
 import os
+from datetime import datetime
 
 logger = logging.getLogger(__name__)
+
+
+def convert_neo4j_to_python(obj: Any) -> Any:
+    """
+    Convert Neo4j objects to JSON-serializable Python objects.
+    
+    Args:
+        obj: Any object that might contain Neo4j-specific types
+        
+    Returns:
+        JSON-serializable Python object
+    """
+    if hasattr(obj, 'iso_format'):  # Neo4j DateTime objects
+        return obj.iso_format()
+    elif isinstance(obj, dict):
+        return {key: convert_neo4j_to_python(value) for key, value in obj.items()}
+    elif isinstance(obj, list):
+        return [convert_neo4j_to_python(item) for item in obj]
+    elif hasattr(obj, '__dict__'):  # Neo4j Node/Relationship objects
+        return convert_neo4j_to_python(dict(obj))
+    else:
+        return obj
 
 
 class Neo4jClient:
@@ -56,6 +79,9 @@ class Neo4jClient:
         Returns:
             The ID of the created/updated note node
         """
+        if not self.driver:
+            raise RuntimeError("Neo4j driver not initialized")
+            
         with self.driver.session() as session:
             # Create or update the note node
             result = session.run("""
@@ -79,7 +105,11 @@ class Neo4jClient:
                 'embedding': metadata.get('embedding', [])
             })
             
-            note_id = result.single()['note_id']
+            record = result.single()
+            if not record:
+                raise RuntimeError("Failed to create note")
+                
+            note_id = record['note_id']
             
             # Create tag nodes and relationships
             for tag in metadata.get('tags', []):
@@ -122,6 +152,9 @@ class Neo4jClient:
         Returns:
             Note data dictionary or None if not found
         """
+        if not self.driver:
+            raise RuntimeError("Neo4j driver not initialized")
+            
         with self.driver.session() as session:
             result = session.run("""
                 MATCH (n:Note {id: $note_id})
@@ -133,14 +166,14 @@ class Neo4jClient:
             record = result.single()
             if record:
                 note = record['n']
-                return {
+                return convert_neo4j_to_python({
                     'id': note['id'],
                     'content': note['content'],
                     'tags': record['tags'],
                     'entities': record['entities'],
                     'created_at': note.get('created_at'),
                     'updated_at': note.get('updated_at')
-                }
+                })
             return None
     
     def search_notes(self, query: str, limit: int = 10) -> List[Dict[str, Any]]:
@@ -154,6 +187,9 @@ class Neo4jClient:
         Returns:
             List of matching notes
         """
+        if not self.driver:
+            raise RuntimeError("Neo4j driver not initialized")
+            
         with self.driver.session() as session:
             result = session.run("""
                 MATCH (n:Note)
@@ -168,14 +204,15 @@ class Neo4jClient:
             notes = []
             for record in result:
                 note = record['n']
-                notes.append({
+                note_data = {
                     'id': note['id'],
                     'content': note['content'],
                     'tags': record['tags'],
                     'entities': record['entities'],
                     'created_at': note.get('created_at'),
                     'updated_at': note.get('updated_at')
-                })
+                }
+                notes.append(convert_neo4j_to_python(note_data))
             
             return notes
     
@@ -186,6 +223,9 @@ class Neo4jClient:
         Returns:
             True if connection is healthy, False otherwise
         """
+        if not self.driver:
+            return False
+            
         try:
             with self.driver.session() as session:
                 session.run("RETURN 1")
