@@ -62,6 +62,22 @@ class Neo4jClient:
             logger.error(f"Failed to connect to Neo4j: {e}")
             raise
     
+    def execute_query(self, query: str, parameters: Optional[Dict[str, Any]] = None) -> List[Dict[str, Any]]:
+        """
+        Execute a Cypher query.
+        Args:
+            query: The Cypher query to execute.
+            parameters: A dictionary of parameters for the query.
+        Returns:
+            A list of records, where each record is a dictionary.
+        """
+        if not self.driver:
+            raise RuntimeError("Neo4j driver not initialized")
+
+        with self.driver.session() as session:
+            result = session.run(query, parameters or {})  # type: ignore
+            return [record.data() for record in result]
+    
     def close(self) -> None:
         """Close the database connection."""
         if self.driver:

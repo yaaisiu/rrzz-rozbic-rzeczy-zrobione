@@ -14,11 +14,17 @@
         - Must switch to 1.7b model due to low memory. Ollama code seems to be updated to Ollama 0.9.
         - Checking even 0.6b model.
     - We have a plan for today 20250619_plan-for-today.md #reference
-    - Let's implement ingestion.py #next_task
+    - Let's implement ingestion.py #done
         - First, neo4j client setup.
         - Neo is now connecting, things are added to it. Testing ollama ingestion script, it gives some troube.
         - Let's try to use think="false" flag to speed things up. Currently we're waiting very long for response. #next_task
             - It works. #reference
     - We can try tool-calling and streaming in the future #reference   
+    - System is not doing what we want, it's based on separate added notes and I would like it to work on text I'm editing, processing each line, putting it into graph - with information about where line begins and ends - it would need to be updated if user changes the order of things. More like notepad it needs to be.
+    - Changed to simpler workflow - for now we just take our note and ingest it into the graph with some llm enrichment. Tests are ongoing. #solvingtheissue
+    - There's too much of this, so let's take two steps back and wrap it up.
+        - Removing all bloat, leaving only notebooks and api, removing frontend, we'll use python scripts or notebook to recreate this pipeline and check what's happening under the hood. #next_task
+            - As bloat I understand removing unneeded code and making sure we have no hardcoded values.
+        - Try to add codebase knowledge base, generated automatically.
 - Cursor notes
     - .cursorignore wrzucone do folderu powinno ignorować jego zawartość dla Cursora. #reference
