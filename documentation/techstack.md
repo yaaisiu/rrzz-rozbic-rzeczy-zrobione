@@ -36,3 +36,4 @@ docker-compose down
 - **Default mode**: Only Neo4j runs, saving space when Ollama is not needed
 - **Ollama mode**: Both services run, with Ollama image (~1GB) downloaded
 - **Cleanup script**: Removes Ollama containers, networks, and optionally images/volumes for maximum space savings
+- **DevContainer cleanup**: For complete environment reset, remove the Docker-in-Docker volume from host level (Docker Desktop or host terminal)

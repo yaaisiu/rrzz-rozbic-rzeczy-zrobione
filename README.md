@@ -102,6 +102,8 @@ docker volume rm rrzz-rozbic-rzeczy-zrobione_ollama_data
 
 **Note**: The cleanup script handles the common case where `docker-compose down` doesn't fully stop Ollama containers due to how Ollama handles graceful shutdowns.
 
+**DevContainer cleanup**: For complete environment reset, the Docker-in-Docker volume can be removed from host level (Docker Desktop or host terminal) to free up additional space.
+
 ### 7. Environment Setup
 Copy the example environment file and configure as needed:
 ```bash

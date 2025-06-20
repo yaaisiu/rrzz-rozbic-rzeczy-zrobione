@@ -64,6 +64,8 @@
         - Created help script (scripts/help.sh) for quick command reference
         - System now supports: default mode (Neo4j only) and ollama profile mode (Neo4j + Ollama)
         - Cleanup script handles cases where docker-compose down doesn't fully stop Ollama containers
+        - Forced removed the original devcontainer volume to save space.
+    - On some day we can check tools that inspect containers and look for vulnerabilities. #someday
 - Cursor
     - Check the GitHub integration with MCP. Idea is to use it to check repositories we want to use when creating knowledge graph out of our codebase. #someday
         - I tried to do it with Grok's assistance but failed. Got to try again.
