@@ -79,4 +79,4 @@ docker-compose.override.yml
 neo4j/
 
 # Ollama
-ollama/ 
+ollama/

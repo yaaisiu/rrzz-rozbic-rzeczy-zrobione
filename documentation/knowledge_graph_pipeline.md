@@ -117,7 +117,10 @@ class Neo4jClient:
         except Exception as e:
             logger.error(f"Failed to connect to Neo4j: {e}")
             raise
-```
+
+    def ensure_constraints(self):
+        """Ensure all necessary constraints are created in the database."""
+        # ... (implementation for creating constraints)
 
 ### `OllamaLLM` Client
 
@@ -174,16 +177,28 @@ class OllamaLLM(BaseLLM):
 
 ---
 
-## Workflow: Batch GTD Ingestion
+## Workflow: Resilient GTD Ingestion with Content Hashing
 
-The primary workflow is the batch ingestion of a structured text file (e.g., `gtd.txt`), managed by the `GraphIngestionService` in `src/backend/graph_ingestion_service.py`. This service performs a full refresh of the graph, deleting old `:GtdNote` nodes before ingesting new ones to ensure idempotency.
+The primary workflow is the batch ingestion of a structured text file (e.g., `gtd.txt`), managed by the `GraphIngestionService`. This service uses a content-hashing strategy to perform an intelligent, incremental update of the graph, making it highly efficient and resilient to changes.
+
+### Core Principles
+
+1.  **Content as the Source of Truth**: Each note's identity is determined by a SHA256 hash of its content (`content_hash`), not its line number. This hash is stored on the `:GtdNote` node in the graph.
+2.  **Uniqueness Guaranteed**: A unique constraint is enforced on the `content_hash` property in Neo4j, ensuring no duplicate notes can exist and making lookups by hash extremely fast.
+3.  **Minimal Processing**: The pipeline only ever uses the LLM on notes that are genuinely new. Existing notes are never re-processed, and their positions are updated efficiently.
 
 ### Process
 
-1.  **Parse File**: The service first parses the structured text file into a list of `Note` objects, preserving indentation to understand hierarchy.
-2.  **Enrich with LLM**: For each note, it invokes the `OllamaLLM` client with a specific prompt to extract structured metadata (entities and a summary).
-3.  **Ingest to Neo4j**: The enriched data is used to create `:GtdNote` nodes in the Neo4j graph.
-4.  **Build Hierarchy**: Finally, it creates `:HAS_CHILD` relationships between the notes based on the original file's indentation, creating a graph that mirrors the document structure.
+1.  **Parse and Hash**: The source text file is parsed into a list of `Note` objects. A unique `content_hash` is generated for each one.
+2.  **Compare State**: The service fetches all existing `content_hash` values from the graph and compares them with the hashes from the file. This comparison identifies three distinct sets:
+    *   **New Notes**: Hashes present in the file but not the graph.
+    -   **Deleted Notes**: Hashes present in the graph but not the file.
+    -   **Existing Notes**: Hashes present in both.
+3.  **Execute Batched Operations**:
+    *   **Add New**: Only the new notes are sent to the LLM for metadata enrichment. They are then added to the graph in a batch `MERGE` operation using their unique hash.
+    *   **Update Existing**: A single, efficient Cypher query updates the `line_number` property for all existing notes to reflect any reordering or shifting. No LLM calls are made.
+    *   **Remove Deleted**: All notes corresponding to the deleted hashes are removed from the graph using a single `DETACH DELETE` query.
+4.  **Rebuild Hierarchy**: Finally, all parent-child (`:HAS_CHILD`) relationships are cleared, and the entire hierarchy is rebuilt from scratch based on the final, correct indentation and line numbers of the notes in the file. This ensures the graph structure always mirrors the document structure.
 
 ### LLM Prompt Template
 
@@ -197,105 +212,14 @@ Respond with a JSON object containing:
 - "summary": a one-sentence summary of the note.
 
 Example response for "Discuss budget with @john for #project-alpha":
-{{
-  "entities": ["john", "project-alpha"],
+{
+  "entities": [
+    {"name": "John", "type": "Person"},
+    {"name": "Project Alpha", "type": "Project"}
+  ],
   "summary": "A task to discuss the budget for Project Alpha with John."
-}}
+}
 
 Your response must be only the JSON object.
 Note content: "{note.content}"
 ```
-
-### Example Usage
-
-The `GraphIngestionService` can be run as a standalone script for testing, as shown in its `if __name__ == '__main__':` block.
-
-```python
-# From src/backend/graph_ingestion_service.py
-
-if __name__ == '__main__':
-    logging.basicConfig(level=logging.INFO)
-    
-    # Create dummy gtd file for testing
-    with open("gtd_test.txt", "w") as f:
-        f.write("Task 1 #project - Discuss budget with @john for #project-alpha\\n")
-        f.write("  Subtask 1.1 - Prepare slides\\n")
-        f.write("    Subtask 1.1.1 #detail - Draft initial version\\n")
-        f.write("  Subtask 1.2\\n")
-        f.write("Task 2 #another - Plan team offsite\\n")
-
-    try:
-        neo4j_client = Neo4jClient()
-        ollama_client = OllamaLLM()
-        
-        if not ollama_client.health_check():
-            logger.error("Ollama is not running. Please start Ollama to run this script.")
-        else:
-            ingestion_service = GraphIngestionService(neo4j_client, ollama_client)
-            ingestion_service.ingest_gtd_file("gtd_test.txt")
-            print("Ingestion successful. Check your Neo4j browser.")
-    except Exception as e:
-        logger.error(f"An error occurred during ingestion: {e}", exc_info=True)
-```
-
----
-
-## Best Practices
-
--   **Service Communication**: When running scripts that interact with the Docker services from your local machine, ensure environment variables point to `localhost` (e.g., `http://localhost:11434`). The clients are designed to default to these values.
--   **Health Checks**: Before running intensive processes like ingestion, use the `ollama_client.health_check()` method to ensure the LLM service is available and responsive.
--   **Model Management**: The required Ollama model (e.g., `qwen3:0.6b`) must be pulled before it can be used. You can do this by executing a command inside the running `ollama` container:
-    ```bash
-    docker compose exec ollama ollama pull qwen3:0.6b
-    ```
-    To use a different model, update the `OLLAMA_MODEL` environment variable and ensure that model is pulled.
--   **Idempotency**: The ingestion script is designed as a full-refresh mechanism. It clears existing data before adding new notes to ensure the graph is always in sync with the source file.
-
-# Neo4j Management Scripts
-
-## Overview
-
-This project includes two utility scripts for managing the Neo4j database used in the knowledge graph pipeline:
-
-### 1. scripts/clean_neo4j.py
-- **Purpose:** Quickly deletes all nodes and relationships from the default Neo4j database.
-- **Usage:**
-  ```bash
-  python scripts/clean_neo4j.py
-  ```
-- **Behavior:**
-  - Connects to the Neo4j instance using default credentials (`bolt://localhost:7687`, user: `neo4j`, password: `password`).
-  - Reports the number of nodes and relationships before and after cleaning.
-  - Verifies that the database is empty after the operation.
-
-### 2. scripts/neo4j_database_manager.py
-- **Purpose:** Provides a more comprehensive management interface for Neo4j.
-- **Features:**
-  - Connects to Neo4j and displays database information (name, version, edition, node/label counts).
-  - Checks for support of multiple databases and attempts to create a test database (will fail on Community Edition).
-  - Allows interactive deletion of all contents, creation of sample data, or both.
-- **Usage:**
-  ```bash
-  python scripts/neo4j_database_manager.py
-  ```
-  Follow the on-screen prompts to choose the desired operation.
-
-## Neo4j Community Edition Limitations
-- **Multiple Databases:**
-  - The Community Edition supports only the default `neo4j` and `system` databases.
-  - Creating additional named databases is not supported (attempts will result in an error).
-- **Recommendation:**
-  - For most local and development use cases, the default database is sufficient.
-  - If you require multiple databases, consider upgrading to Neo4j Enterprise Edition.
-
-## Credentials
-- The scripts use the following default credentials:
-  - URI: `bolt://localhost:7687`
-  - User: `neo4j`
-  - Password: `password`
-- Update these values in the scripts if your Neo4j instance uses different credentials.
-
-## Troubleshooting
-- Ensure the Neo4j service is running before executing the scripts.
-- If you encounter connection errors, verify the URI, username, and password.
-- For further details, check the script logs and Neo4j server logs. 

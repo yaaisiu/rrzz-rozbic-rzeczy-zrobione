@@ -1,5 +1,6 @@
 import re
 from typing import List, Dict, Any, NamedTuple
+import hashlib
 
 class Note(NamedTuple):
     content: str
@@ -7,6 +8,7 @@ class Note(NamedTuple):
     tags: List[str]
     line_number: int
     date_str: str
+    content_hash: str
 
 def get_indentation(line: str) -> int:
     """Calculates the indentation level of a line based on leading spaces."""
@@ -19,12 +21,15 @@ def parse_line(line: str, line_number: int, current_date: str) -> Note:
     tags = re.findall(r"#(\w+)", content)
     # Remove tags from content
     content_without_tags = re.sub(r"\s*#\w+", "", content).strip()
+    # Calculate hash from the original stripped line content
+    content_hash = hashlib.sha256(content.encode('utf-8')).hexdigest()
     return Note(
         content=content_without_tags,
         indentation=indentation,
         tags=tags,
         line_number=line_number,
-        date_str=current_date
+        date_str=current_date,
+        content_hash=content_hash
     )
 
 def parse_file(file_path: str) -> List[Note]:

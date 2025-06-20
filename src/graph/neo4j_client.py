@@ -48,6 +48,7 @@ class Neo4jClient:
         
         self.driver = None
         self._connect()
+        self.ensure_constraints()
         
         logger.info(f"Initialized Neo4j client with URI: {self.uri}")
     
@@ -69,6 +70,19 @@ class Neo4jClient:
                 else:
                     logger.error("Could not establish connection to Neo4j after multiple retries.")
                     raise
+    
+    def ensure_constraints(self):
+        """Ensure all necessary constraints are created in the database."""
+        if not self.driver:
+            raise RuntimeError("Neo4j driver not initialized")
+
+        with self.driver.session() as session:
+            # Constraint for GtdNote content_hash
+            try:
+                session.run("CREATE CONSTRAINT gtdNote_content_hash IF NOT EXISTS FOR (n:GtdNote) REQUIRE n.content_hash IS UNIQUE")
+                logger.info("Successfully created or verified constraint on :GtdNote(content_hash).")
+            except Exception as e:
+                logger.error(f"Failed to create constraint on :GtdNote(content_hash): {e}")
     
     def execute_query(self, query: str, parameters: Optional[Dict[str, Any]] = None) -> List[Dict[str, Any]]:
         """
