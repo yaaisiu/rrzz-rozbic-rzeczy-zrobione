@@ -18,6 +18,8 @@ services:
   # Ollama Service (not exposed to host to avoid conflicts)
   ollama:
     image: ollama/ollama
+    profiles:
+      - ollama
     volumes:
       - ollama_data:/root/.ollama
     networks:

@@ -4,9 +4,9 @@ A local, privacy-first note-taking tool that auto-tags, embeds, and links notes 
 
 ## Tech Stack
 - **CLI**: Python
-- **LLM**: Ollama (default)
+- **LLM**: Ollama (optional via Docker Compose profiles)
 - **Graph DB**: Neo4j 5.x
-- **Containerization**: Docker, Docker Compose
+- **Containerization**: Docker, Docker Compose with profiles
 
 ## Quick Start
 
@@ -20,28 +20,23 @@ cd rrzz-rozbic-rzeczy-zrobione
 ```
 
 ### 2. Start Docker Services
-You have two options to start the services:
+By default, the system starts only the essential services (like Neo4j). The Ollama service is now optional and can be started only when needed.
 
-#### Option A: Using the startup script (Recommended)
+#### Starting Core Services (Without Ollama)
+This is the default and recommended way to run the application if you are using a cloud-based LLM provider like OpenAI or Google.
 ```bash
-# Make the script executable
-chmod +x scripts/docker-start.sh
-
-# Start all services
-./scripts/docker-start.sh
-```
-
-#### Option B: Manual Docker Compose
-```bash
-# Start services in detached mode
 docker-compose up -d
-
-# Check service status
-docker-compose ps
 ```
 
-### 3. Pull LLM Model (Optional)
-After services are running, you can pull a specific model for Ollama:
+#### Starting All Services (With Ollama)
+If you want to run the local Ollama LLM, start the services with the `ollama` profile.
+You also need to set `LLM_PROVIDER=ollama` in your `.env` file.
+```bash
+docker-compose --profile ollama up -d
+```
+
+### 3. Pull LLM Model (Only for Ollama)
+If you started the services with the `ollama` profile, you can pull a specific model:
 
 ```bash
 # Make the script executable
@@ -84,7 +79,30 @@ docker-compose exec neo4j cypher-shell -u neo4j -p password
 docker-compose exec ollama ollama list
 ```
 
-### 6. Environment Setup
+### 6. Ollama Cleanup and Space Management
+
+When you're done using Ollama, you can clean up to save disk space:
+
+```bash
+# Stop all services
+docker-compose down
+
+# Clean up Ollama containers and networks
+./scripts/cleanup-ollama.sh
+```
+
+For maximum space savings, you can also remove the Ollama image and volumes:
+```bash
+# Remove Ollama image (~1GB)
+docker rmi ollama/ollama
+
+# Remove Ollama volumes (models and cache)
+docker volume rm rrzz-rozbic-rzeczy-zrobione_ollama_data
+```
+
+**Note**: The cleanup script handles the common case where `docker-compose down` doesn't fully stop Ollama containers due to how Ollama handles graceful shutdowns.
+
+### 7. Environment Setup
 Copy the example environment file and configure as needed:
 ```bash
 cp env.example .env
