@@ -249,4 +249,53 @@ if __name__ == '__main__':
     docker compose exec ollama ollama pull qwen3:0.6b
     ```
     To use a different model, update the `OLLAMA_MODEL` environment variable and ensure that model is pulled.
--   **Idempotency**: The ingestion script is designed as a full-refresh mechanism. It clears existing data before adding new notes to ensure the graph is always in sync with the source file. 
+-   **Idempotency**: The ingestion script is designed as a full-refresh mechanism. It clears existing data before adding new notes to ensure the graph is always in sync with the source file.
+
+# Neo4j Management Scripts
+
+## Overview
+
+This project includes two utility scripts for managing the Neo4j database used in the knowledge graph pipeline:
+
+### 1. scripts/clean_neo4j.py
+- **Purpose:** Quickly deletes all nodes and relationships from the default Neo4j database.
+- **Usage:**
+  ```bash
+  python scripts/clean_neo4j.py
+  ```
+- **Behavior:**
+  - Connects to the Neo4j instance using default credentials (`bolt://localhost:7687`, user: `neo4j`, password: `password`).
+  - Reports the number of nodes and relationships before and after cleaning.
+  - Verifies that the database is empty after the operation.
+
+### 2. scripts/neo4j_database_manager.py
+- **Purpose:** Provides a more comprehensive management interface for Neo4j.
+- **Features:**
+  - Connects to Neo4j and displays database information (name, version, edition, node/label counts).
+  - Checks for support of multiple databases and attempts to create a test database (will fail on Community Edition).
+  - Allows interactive deletion of all contents, creation of sample data, or both.
+- **Usage:**
+  ```bash
+  python scripts/neo4j_database_manager.py
+  ```
+  Follow the on-screen prompts to choose the desired operation.
+
+## Neo4j Community Edition Limitations
+- **Multiple Databases:**
+  - The Community Edition supports only the default `neo4j` and `system` databases.
+  - Creating additional named databases is not supported (attempts will result in an error).
+- **Recommendation:**
+  - For most local and development use cases, the default database is sufficient.
+  - If you require multiple databases, consider upgrading to Neo4j Enterprise Edition.
+
+## Credentials
+- The scripts use the following default credentials:
+  - URI: `bolt://localhost:7687`
+  - User: `neo4j`
+  - Password: `password`
+- Update these values in the scripts if your Neo4j instance uses different credentials.
+
+## Troubleshooting
+- Ensure the Neo4j service is running before executing the scripts.
+- If you encounter connection errors, verify the URI, username, and password.
+- For further details, check the script logs and Neo4j server logs. 

@@ -48,14 +48,16 @@
         - Got to work on neo4j again as it got removed by this promot.
     - And at the end I ended with the single documentation file containing all information. Probably because documentation was added to the context. Some kind of loop. #wonder
         - Anyway I'll check it against codebase and use anyway. I should try to redo the process for particular libraries documentations. #someday
-    - Asking Gemini Pro 2.5 to analyse my codebase, remove streamlit and all non used code and clean up with the files. #next_task
+    - Asking Gemini Pro 2.5 to analyse my codebase, remove streamlit and all non used code and clean up with the files. #done
 
 20.06
 
 - Getting Things done.
     - We need to review, document and improve graph creation. #next_task
+        - Created some tools to clean up knowledge graph.
     - We also need to review, document and improve the prompt we're using. #next_task
         - What's important - when creating LLM based description, we should take context into account to create better, hierarchical based descriptions.
+        - During the graph improvement process, Cursor changed also our prompt.
     - Review what's happened yesterday and what should we try to do today. #next_task
     - For saving space purposes, we want to add option to disable and remove ollama container content. #done
         - Implemented Docker Compose profiles for optional Ollama service
@@ -66,10 +68,15 @@
         - Cleanup script handles cases where docker-compose down doesn't fully stop Ollama containers
         - Forced removed the original devcontainer volume to save space.
     - On some day we can check tools that inspect containers and look for vulnerabilities. #someday
+    - We need to start working on caching soon. Running the script over and over again takes quite a lot of time. We need to run llm only on lines that have changed. #next_task
+    - When adding information to the graph, we get warning about cartesian product. There's workaround and we should implement it sooner than later. #known_issue
+    - Check if Bloom can be used in our current setup. If not, check if we can set up something on streamlit. #next_task
 - Cursor
     - Check the GitHub integration with MCP. Idea is to use it to check repositories we want to use when creating knowledge graph out of our codebase. #someday
         - I tried to do it with Grok's assistance but failed. Got to try again.
+    - Checking why docker ollama under devcontainers is using cpu only for serving models.
 - Neo4j
-    - Check if we can create different databases in current edition. #sub15minutes
+    - Check if we can create different databases in current edition. #done
+        - We can't, but we always can run another neo4j container. #reference
 
 
