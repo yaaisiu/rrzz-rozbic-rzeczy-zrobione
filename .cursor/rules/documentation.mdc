@@ -13,4 +13,5 @@ Refer to the documentation directory for context, including:
 - [dataflow.md](mdc:documentation/dataflow.md)
 - [techstack.md](mdc:documentation/techstack.md)
 - [ollama-gpt-docs.md](mdc:documentation/ollama-gpt-docs.md)
+- [graph-schema.md](mdc:documentation/graph-schema.md)
 Use these files to inform code generation and ensure alignment with project requirements.

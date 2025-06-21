@@ -84,8 +84,24 @@
     - Check the GitHub integration with MCP. Idea is to use it to check repositories we want to use when creating knowledge graph out of our codebase. #someday
         - I tried to do it with Grok's assistance but failed. Got to try again.
     - Checking why docker ollama under devcontainers is using cpu only for serving models.
+        - According to my GPT research, there's no metal support in docker containers on macos. #reference
 - Neo4j
     - Check if we can create different databases in current edition. #done
         - We can't, but we always can run another neo4j container. #reference
+
+21.06
+
+- Getting things done
+    - Graph
+        - Create python script to create nice markdown document documenting our graph schema. #done
+            - Simple document is automatically generated to show nodes, relationships and relevant properties. Could be useful for text2cypher tasks. #reference
+    - Prompts
+        - Work on our prompt extracting entities. #next_task
+            - Create notebook to work on examples based on our current gtd.txt file. It should be based on contents of our current graph.
+                - Claude Sonnet managed to create the notebook. I will test it but first I need to solve why markdown is not displayed in VSCode. #solved
+                    - Needed to change cell type to markdown and tick confirmation #reference
+                    - It's working and we can use it to prepare few shot prompting examples. Just need to spend some time.
+- Ideas
+    - We should try to parse other content, like some short story, and see what  happens. I see this as good opportunity to add chunking to our workflow. Currently we don't have any need for this. #someday
 
 
