@@ -73,11 +73,12 @@
             - It completed the task. Now I need to run the pipeline to create hashes for the first time.
                 - Initial scan conducted.
                     - One issue spotted - we must create some failsafe or retry mechanism, WARNING - Failed to parse LLM response as JSON for line 71, even after cleaning:  #known_issue
-                    - Second issue is updating line numbers after line got added in the middle or removed. #known_issue
-                    - Trying to solve this by more robust mechanism.
-                        - And looks like it's working. We should #someday check it against more cases but for now it's working.
+                    - Second issue is updating line numbers after line got added in the middle or removed. #done
+                        - Trying to solve this by more robust   mechanism.
+                            - And looks like it's working. We should #someday check it against more cases but for now it's working. Like if changing of identation changes structure of the graph. It should definitely.
         - In case of parsing the lines, in the future we would need to check how it will work to use difs of new and old file. Find a way to keep track of changes. #someday
     - When adding information to the graph, we get warning about cartesian product. There's workaround and we should implement it sooner than later. #known_issue
+        - The issue is not present in latest versions of the code. #observe
     - Check if Bloom can be used in our current setup. If not, check if we can set up something on streamlit. #next_task
 - Cursor
     - Check the GitHub integration with MCP. Idea is to use it to check repositories we want to use when creating knowledge graph out of our codebase. #someday
